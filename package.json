@@ -1,0 +1,17 @@
+{
+  "name": "mymoviedb",
+  "version": "1.0.3",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "MD",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "open": "^8.4.0",
+    "path": "^0.12.7"
+  }
+}
