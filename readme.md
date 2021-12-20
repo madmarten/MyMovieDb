@@ -16,6 +16,8 @@ Installation from npm module:
 
 **npm install mymoviedb**
 
+**cd node_modules/mymoviedb**
+
 **npm start**
 
 
