@@ -1,5 +1,99 @@
-<!DOCTYPE html>
+<!doctype html>
+<html lang="en">
+	<head>
+		<!-- meta tags -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-<body>
-	<h1>My Movie Db</h1>
+		<!-- Progress indicator -->
+		<script data-pace-options='{ "document": false }' src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" ></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace-theme-default.min.css">
+		<link rel="stylesheet" href="assets/css/flat-top.css">
+
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+		<!-- App CSS -->
+		<link rel="stylesheet" href="assets/css/mymoviedb.css">
+
+		<title>My Movie Db</title>
+	</head>
+
+	<body class="bg-dark text-white">
+		<div class="container">
+			<div class="row ">
+				<div class="col-12">
+					<h1>My Movie Db</h1>
+					<p id="txtApiKey" data-bind="visible: thisModel.apiKey() != ''">
+						<span>Api nyckel: </span> &nbsp;
+						<span  data-bind="text: thisModel.apiKey"></span> &nbsp;
+						<span>(klicka för att ändra)</span>
+					</p>
+					<div class="alert alert-danger alert-dismissible fade hide" role="alert">
+						<span>Hämtningen misslyckades. Kontrollera din api nyckel.</span>
+						<button id="btnAlert" type="button" class="close"  aria-label="Close">
+						  <span  aria-hidden="true">&times;</span>
+						</button>
+					</div>
+				</div>
+				
+			</div>
+
+			<div class="row ">
+				<div class="col-12">
+					<div class="input-group mb-3" style="display: none;" data-bind="visible: thisModel.apiKey() == ''">
+						<input id="inputApiKey" type="text" class="form-control"  placeholder="Skriv in din api nyckel för themoviedb.org" aria-label="Skriv in din api nyckel för themoviedb.org" aria-describedby="basic-addon2">
+						<div class="input-group-append">
+							<a href="" id="btnUseApiKey" class="btn btn-outline-primary" role="button">Använd</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row " style="display: none;" data-bind="visible: thisModel.apiKey() != ''">
+				<div class="col-12">
+					<a id="btnLoadInit" href="" class="btn btn-primary btn-lg active" role="button" >Hämta populära filmer</a>
+				</div>
+			</div>
+			
+			<!-- Start list of movies -->
+			<div style="display: none;" data-bind="visible: thisModel.movies().length > 0">
+				<h2>Populära filmer</h2>
+				<hr/>
+				<div id="movies" class="row " data-bind='foreach: thisModel.movies()'>
+					<div class="col-sm-6 col-lg-3 card-group">
+						<div class="card bg-secondary mb-5" >
+							<img class="card-img-top" alt="Card image cap" data-bind="attr:{ src: posterFullUrl}">
+							<div class="card-body">
+								<div class="index" data-bind="text: ($index() + 1)"></div>
+								<h5 class="card-title " data-bind="text: title"></h5>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- End list of movies -->
+
+			
+			<div class="row " >
+				<div class="col-12 mb-3">
+					<a id="btnLoadMore" style="display: none;" href="" class="btn btn-primary btn-lg active" role="button" >Ladda fler</a>
+				</div>
+				
+			</div>
+		</div>
+
+    <!-- JavaScript -->
+    <!-- jQuery need to load first -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+	<!-- knockoutjs for binding viewmodel to elements -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout.mapping/2.4.1/knockout.mapping.min.js"></script>
+
+	<!-- js files for page -->
+	<script src="assets/js/common/utility.js" ></script>
+	<script src="assets/js/index.js" ></script>
 </body>
+</html>
