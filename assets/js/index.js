@@ -108,7 +108,6 @@ var myViewModel = function () {
 			//fail
 			thisModel.fetchInProgress = false;
 			$('.alert').removeClass( "hide" ).addClass( "show" );
-			console.log('getJSON request failed! ' + textStatus);
 		});
 
 	}
