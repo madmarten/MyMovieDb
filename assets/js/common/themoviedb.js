@@ -1,9 +1,9 @@
 TheMovieDb = function () {
 
 	const _API_POSTER_URL = "https://image.tmdb.org/t/p/w185";
-	const _API_POPULAR_URL = "https://api.themoviedb.org/3/movie/popular"
+	const _API_POPULAR_URL = "https://api.themoviedb.org/3/movie/popular";
 
-	const _API_KEY_COOKIE_NAME = "apiKey"
+	const _API_KEY_COOKIE_NAME = "apiKey";
 
 	var _apiKey = '';
 
@@ -20,11 +20,9 @@ TheMovieDb = function () {
 	}
 
 	var _fetchPopularMovies = function (page, successCallback, failCallback) {
-		
 		var api_url = TheMovieDb.API_POPULAR_URL + "?api_key=" + _apiKey + "&page=" + page;
 	
 		$.getJSON( api_url, function( data ) {
-			
 			if (successCallback && typeof (successCallback) === "function") {
 				successCallback(data);
 			}
@@ -36,22 +34,14 @@ TheMovieDb = function () {
 			}
 			console.log('getJSON fetchPopularMovies request failed: ' + textStatus);
 		 });
-
-
 	}
 
-	
-	
-
 	return {
-
 		API_POSTER_URL: _API_POSTER_URL,
 		API_POPULAR_URL: _API_POPULAR_URL,
 
 		setApiKey: _setApiKey,
 		getApiKey: _getApiKey,
 		fetchPopularMovies: _fetchPopularMovies,
-
 	}
-
 }();

@@ -64,9 +64,8 @@ var myViewModel = function () {
 	//variables for continous loading when scrolling
 	this.fetchInProgress = false;
 	this.pageToFetch = 1;
-	this.currentScrollPageStop = 5;
 	this.scrollPageSize = 5; //5 x 20 movie chunks = 100 movies before showing load more button
-
+	this.currentScrollPageStop = this.scrollPageSize;
 
 	this.apiKey = ko.observable(''); //to bind apiKey with dom element for input
 	
