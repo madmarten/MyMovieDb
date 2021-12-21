@@ -1,17 +1,10 @@
-var api_poster_url = "https://image.tmdb.org/t/p/w185";
-var api_popular_url = "https://api.themoviedb.org/3/movie/popular"
-
 var thisModel; //keep reference for viewmodel that is bound to dom
 
 //keep reference to elements for speed improvment during scrolling
 var moviesContainer; 
 var scrollLoadMoreButton; 
 
-//variables for continous loading when scrolling
-var fetchInProgress = false;
-var pageToFetch = 1;
-var currentScrollPageStop = 5;
-var scrollPageSize = 5;
+
 
 $(document).ready(function () {
 	moviesContainer = $("#movies");
@@ -30,7 +23,7 @@ $(document).ready(function () {
 	//button for continue loading after scroll stop
 	scrollLoadMoreButton.on("click", function (event) {
 		event.preventDefault();
-		currentScrollPageStop = currentScrollPageStop + scrollPageSize;
+		thisModel.currentScrollPageStop = thisModel.currentScrollPageStop + thisModel.scrollPageSize;
 		thisModel.fetchPopularMoviesNext();
 		$(this).hide();
 	});
@@ -38,7 +31,7 @@ $(document).ready(function () {
 	//button to set and store the api key in a cookie
 	$("#btnUseApiKey").on("click", function (event) {
 		thisModel.apiKey($("#inputApiKey").val());
-		Utility.setCookie("apiKey", thisModel.apiKey(), 30);
+		TheMovieDb.setApiKey(thisModel.apiKey());
 		$("#btnLoadInit").show();
 	});
 
@@ -47,7 +40,8 @@ $(document).ready(function () {
 		thisModel.apiKey("");
 		$("#inputApiKey").val("");
 		thisModel.movies.removeAll();
-		pageToFetch = 1;
+		thisModel.pageToFetch = 1;
+		scrollLoadMoreButton.hide();
 	});
 
 	//close the error message
@@ -59,7 +53,7 @@ $(document).ready(function () {
 	ko.applyBindings(new myViewModel());
 
 	//try to get api key from previous session
-	thisModel.apiKey(Utility.getCookie("apiKey",""));
+	thisModel.apiKey(TheMovieDb.getApiKey());
 
 });
 
@@ -67,7 +61,14 @@ var myViewModel = function () {
 	var self = this;
 	thisModel = this;
 
-	this.apiKey = ko.observable('');
+	//variables for continous loading when scrolling
+	this.fetchInProgress = false;
+	this.pageToFetch = 1;
+	this.currentScrollPageStop = 5;
+	this.scrollPageSize = 5; //5 x 20 movie chunks = 100 movies before showing load more button
+
+
+	this.apiKey = ko.observable(''); //to bind apiKey with dom element for input
 	
 	//array to hold all movies loaded
 	//when a movie is added or removed from this array the UI element is updated 
@@ -79,7 +80,7 @@ var myViewModel = function () {
 		if ((movie != null) && (this.movies.indexOf(movie) < 0)) // Prevent blanks and duplicates
 		{
 			movie.posterFullUrl = ko.computed(function () {
-				        return (api_poster_url + movie.poster_path());
+				        return (TheMovieDb.API_POSTER_URL + movie.poster_path());
 				    }, movie);
 			this.movies.push(movie);
 		}
@@ -87,26 +88,29 @@ var myViewModel = function () {
  
 	//make the call to themoviedb.org api and fetch the most popular movies. chunks of 20 movies.
     this.fetchPopularMoviesNext = function (){
-		fetchInProgress = true; //to avoid multiple calls while scrolling
+		thisModel.fetchInProgress = true; //to avoid multiple calls while scrolling
 		Pace.restart(); //reset progress indicator
 
-		var api_url = api_popular_url + "?api_key=" + this.apiKey() + "&page=" + pageToFetch;
-	
-		$.getJSON( api_url, function( data ) {
+		TheMovieDb.fetchPopularMovies(thisModel.pageToFetch, function(data){
+			//success
 			$.each( data.results, function( i, movie ) {
 				thisModel.addMovie(movie);
 			});
 
-			if (pageToFetch === currentScrollPageStop) {
-		        scrollLoadMoreButton.show(); //show load more button since we reached max nr of pages to auto load
-		    }
-			pageToFetch ++; //set the next page to load when this method i called next time
-			fetchInProgress = false;
-		})
-		.fail(function(jqXHR, textStatus, errorThrown) { 
+			if (thisModel.pageToFetch === thisModel.currentScrollPageStop) {
+				scrollLoadMoreButton.show(); 
+			}
+			thisModel.pageToFetch ++; 
+			thisModel.fetchInProgress = false;
+
+		},
+		function(){
+			//fail
+			thisModel.fetchInProgress = false;
 			$('.alert').removeClass( "hide" ).addClass( "show" );
 			console.log('getJSON request failed! ' + textStatus);
-		 });
+		});
+
 	}
 };
 
@@ -114,8 +118,8 @@ var myViewModel = function () {
 
 //scrolling will auto load next set of movies to show
 $(window).scroll(function () {
-    if (currentScrollPageStop >= pageToFetch) {
-        if ((moviesContainer.offset().top + moviesContainer.height()) <= ($(window).scrollTop() + $(window).height() + 100)  && !fetchInProgress) {
+    if (thisModel.currentScrollPageStop >= thisModel.pageToFetch) {
+        if ((moviesContainer.offset().top + moviesContainer.height()) <= ($(window).scrollTop() + $(window).height() + 100)  && !thisModel.fetchInProgress) {
             scrollLoadMoreButton.hide();
             thisModel.fetchPopularMoviesNext();
         }
